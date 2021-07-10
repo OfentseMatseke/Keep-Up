@@ -43,9 +43,12 @@ In the Backend Folder is the handler.js and serverless.yml which deploys a stack
 - To run the servlerless:
 
   1. Ensure you have serverless installed globally and you are logged in to the correct aws account
-  2. npm install aws
-  3. sls deploy --stage -(desired stage)
-
+  2. ```bash
+      npm install aws
+     ```
+  3. ```bash
+      sls deploy --stage -(desired stage)
+     ```
   ## Learn More
 
 To learn more about Next.js, take a look at the following documentation:
