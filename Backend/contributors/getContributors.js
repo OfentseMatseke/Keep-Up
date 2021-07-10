@@ -7,35 +7,60 @@ AWS.config.update({
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 module.exports.getContributors = async (event, context) => {
-  const s = event.queryStringParameters.suburb;
-
-  const params = {
-    TableName: process.env.CONTRIBUTORS_TABLE,
-    FilterExpression: "suburb = :sub",
-    ExpressionAttributeValues: {
-      ":sub": s,
-    },
+  let body = "";
+  let statusCode = 200;
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
   };
 
-  let responseBody = "";
-  let statusCode = 0;
+  if (
+    event &&
+    event.queryStringParameters &&
+    event.queryStringParameters.suburb
+  ) {
+    const params = {
+      TableName: process.env.CONTRIBUTORS_TABLE,
+      FilterExpression: "suburb = :sub",
+      ExpressionAttributeValues: {
+        ":sub": event.queryStringParameters.suburb,
+      },
+    };
 
-  try {
-    const data = await docClient.scan(params).promise();
-    responseBody = JSON.stringify(data.Items);
-    statusCode = 200;
-  } catch (err) {
-    responseBody = `Unable to get user data`;
-    statusCode = 403;
+    try {
+      const data = await docClient.scan(params).promise();
+      body = JSON.stringify(
+        data.Items.sort((item1, item2) => {
+          let dateA = new Date(item1.date);
+          let dateB = new Date(item2.date);
+          return dateA - dateB;
+        })
+      );
+    } catch (err) {
+      statusCode = err.statusCode;
+    }
+  } else {
+    const params = {
+      TableName: process.env.CONTRIBUTORS_TABLE,
+    };
+
+    try {
+      const data = await docClient.scan(params).promise();
+      body = JSON.stringify(
+        data.Items.sort((item1, item2) => {
+          let dateA = new Date(item1.date);
+          let dateB = new Date(item2.date);
+          return dateA - dateB;
+        })
+      );
+    } catch (err) {
+      statusCode = err.statusCode;
+    }
   }
 
   const response = {
     statusCode,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-    },
-    body: responseBody,
+    body,
+    headers,
   };
-
   return response;
 };
