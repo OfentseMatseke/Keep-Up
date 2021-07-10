@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import Dashboard from "../../components/dashboard/Dashboard";
 import Cookies from "js-cookie";
 import Table from "../../components/dashboard/Table";
+import { useAppContext } from "../../src/context";
+import router from "next/router";
+import { parseCookies } from "nookies";
 
 const columns = [
   {
@@ -43,16 +46,24 @@ const columns = [
 export default function events() {
   const [suburb, setSuburb] = useState("Unknown");
   const [events, setEvents] = useState([]);
-  const api_url =
-    "https://9pylrbkatk.execute-api.eu-central-1.amazonaws.com/dev/";
+  const { checkSession, loading, setLoading } = useAppContext();
 
   useEffect(() => {
     setSuburb(Cookies.get("suburb"));
+    const cookies = parseCookies();
+    if (
+      Object.keys(cookies).length !== 0 &&
+      cookies.constructor === Object &&
+      cookies.token
+    ) {
+      checkSession();
+    } else {
+      router.push("/dashboard/signin");
+    }
+    const events_url = `${process.env.NEXT_PUBLIC_API_KEY}/getEvents?suburb=${suburb}`;
 
-    const events_url = `${api_url}getEvents?suburb=${suburb}`;
-
-    const getEvents = async (projects_url) => {
-      fetch(projects_url)
+    const getEvents = async (events_url) => {
+      fetch(events_url)
         .then((response) => response.json())
         .then((json) => {
           setEvents(
@@ -110,21 +121,26 @@ export default function events() {
         console.error("fetch failed", err);
       });
   };
-  return (
-    <Dashboard>
-      <Table
-        columns={columns}
-        data={events}
-        title={"Events"}
-        setData={setEvents}
-        deleteItem={deleteItem}
-        addItem={addItem}
-        updateItem={updateItem}
-      />
-      {/* <AddEvent />
+
+  if (loading) {
+    return null;
+  } else {
+    return (
+      <Dashboard>
+        <Table
+          columns={columns}
+          data={events}
+          title={"Events"}
+          setData={setEvents}
+          deleteItem={deleteItem}
+          addItem={addItem}
+          updateItem={updateItem}
+        />
+        {/* <AddEvent />
       <div style={{ height: 400, width: "100%" }}>
         <DataGrid rows={events} columns={columns} checkboxSelection />
       </div> */}
-    </Dashboard>
-  );
+      </Dashboard>
+    );
+  }
 }

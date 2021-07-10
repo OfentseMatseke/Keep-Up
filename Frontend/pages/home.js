@@ -21,45 +21,48 @@ function Home() {
 
   const fetchData = (suburb) => {
     setIsLoading(true);
-    const suburb_url = `${process.env.API_KEY}/getSuburbs?suburb=${suburb}`;
-    const projects_url = `${process.env.API_KEY}/getProjects?suburb=${suburb}`;
-    const donations_url = `${process.env.API_KEY}/getDonations`;
+    const suburb_url = `${process.env.NEXT_PUBLIC_API_KEY}/getSuburbs?suburb=${suburb}`;
+    const projects_url = `${process.env.NEXT_PUBLIC_API_KEY}/getProjects?suburb=${suburb}`;
+    const donations_url = `${process.env.NEXT_PUBLIC_API_KEY}/getDonations`;
 
     const getSuburb = axios.get(suburb_url);
     const getProjects = axios.get(projects_url);
     const getDonations = axios.get(donations_url);
-    axios.all([getSuburb, getProjects, getDonations]).then(
-      axios.spread((...allData) => {
-        const allSuburbData = allData[0];
-        const allProjectsData = allData[1];
-        const allDonationsData = allData[2];
+    axios
+      .all([getSuburb, getProjects, getDonations])
+      .then(
+        axios.spread((...allData) => {
+          const allSuburbData = allData[0];
+          const allProjectsData = allData[1];
+          const allDonationsData = allData[2];
 
-        setUrl(allSuburbData.data[0].iframe);
-        setProjects(allProjectsData.data.map((item) => item.description));
-        let proj = [];
-        for (let i = 0; i < allProjectsData.data.length; i += 1) {
-          const container = {};
-          container["date"] = allProjectsData.data[i].date;
-          container.amount = Number(allProjectsData.data[i].spend);
-          proj.push(container);
-        }
-        console.log("This is the projects: ", proj);
-        setMoneySpend(proj);
-        // allProjectsData.data.map((item) => {
-        //   const container = {};
-        //   container["date"] = item.date;
-        //   container.amount = Number(item.spend);
-        //   return container;
-        // })
+          setUrl(allSuburbData.data[0].iframe);
+          setProjects(allProjectsData.data.map((item) => item.description));
+          let proj = [];
+          for (let i = 0; i < allProjectsData.data.length; i += 1) {
+            const container = {};
+            container["date"] = allProjectsData.data[i].date;
+            container.amount = Number(allProjectsData.data[i].spend);
+            proj.push(container);
+          }
+          console.log("This is the projects: ", proj);
+          setMoneySpend(proj);
+          // allProjectsData.data.map((item) => {
+          //   const container = {};
+          //   container["date"] = item.date;
+          //   container.amount = Number(item.spend);
+          //   return container;
+          // })
 
-        const subName = suburb[0].toUpperCase() + suburb.slice(1);
+          const subName = suburb[0].toUpperCase() + suburb.slice(1);
 
-        setDonations(() =>
-          allDonationsData.data.filter((item) => item.reference === subName)
-        );
-        setIsLoading(false);
-      })
-    );
+          setDonations(() =>
+            allDonationsData.data.filter((item) => item.reference === subName)
+          );
+          setIsLoading(false);
+        })
+      )
+      .catch(console.log);
   };
 
   useEffect(() => {

@@ -19,7 +19,7 @@ export default function events() {
 
   useEffect(() => {
     setSuburb(Cookies.get("suburb"));
-    let api_url = `${process.env.API_KEY}/getEvents?suburb=${suburb}`;
+    let api_url = `${process.env.NEXT_PUBLIC_API_KEY}/getEvents?suburb=${suburb}`;
 
     const getContributors = (api_url) => {
       fetch(api_url)

@@ -87,7 +87,7 @@ export default function donateWindow() {
         transactionDateDay;
 
       var url =
-        `${process.env.API_KEY}/createCheckout?amount=` +
+        `${process.env.NEXT_PUBLIC_API_KEY}/createCheckout?amount=` +
         amount +
         "&emailAddress=" +
         email +

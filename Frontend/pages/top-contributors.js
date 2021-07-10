@@ -42,7 +42,7 @@ export default function topContributors({ apiKey }) {
 
   useEffect(() => {
     setSuburb(Cookies.get("suburb"));
-    let api_url = `${process.env.API_KEY}/getContributors?suburb=${suburb}`;
+    let api_url = `${process.env.NEXT_PUBLIC_API_KEY}/getContributors?suburb=${suburb}`;
 
     const getContributors = (api_url) => {
       fetch(api_url)

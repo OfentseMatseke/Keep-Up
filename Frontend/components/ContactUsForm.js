@@ -73,7 +73,7 @@ function ContactUsForm() {
   const formSubmit = async (e) => {
     e.preventDefault();
     setButtonText("...sending");
-    const url = `${process.env.API_KEY}/contactUs`;
+    const url = `${process.env.NEXT_PUBLIC_API_KEY}/contactUs`;
     let data = {
       name:
         firstName.charAt(0).toUpperCase() +

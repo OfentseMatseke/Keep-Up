@@ -50,8 +50,8 @@ export default function SignUP() {
     document.getElementById("nameMobile").value = "";
   }
   function mailChimp(email, name) {
-    const api_key = process.env.MAILCHIMP_KEY;
-    console.log("This is the key ", api_key);
+    const api_key = process.env.NEXT_PUBLIC_MAILCHIMP_KEY;
+
     try {
       var data = null;
       var xhr = new XMLHttpRequest();

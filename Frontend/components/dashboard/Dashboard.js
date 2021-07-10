@@ -20,9 +20,9 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { mainListItems, secondaryListItems } from "./listItems";
 import packageJson from "../../package.json";
 import { useAppContext } from "../../src/context";
-import router from "next/router";
+// import router from "next/router";
 
-import { parseCookies } from "nookies";
+// import { parseCookies } from "nookies";
 
 function Copyright() {
   return (
@@ -120,6 +120,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard({ children }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+
   const { user, authenticated, logout, checkSession, setUser } =
     useAppContext();
   // console.log("The user is ", authenticated);
@@ -134,17 +135,16 @@ export default function Dashboard({ children }) {
 
   useEffect(() => {
     // checkSession();
-    const cookies = parseCookies();
-    if (
-      Object.keys(cookies).length !== 0 &&
-      cookies.constructor === Object &&
-      cookies.token
-    ) {
-      checkSession();
-    } else {
-      router.push("/dashboard/signin");
-    }
-    console.log("This is the user ", cookies);
+    // const cookies = parseCookies();
+    // if (
+    //   Object.keys(cookies).length !== 0 &&
+    //   cookies.constructor === Object &&
+    //   cookies.token
+    // ) {
+    //   checkSession();
+    // } else {
+    //   router.push("/dashboard/signin");
+    // }
   }, []);
 
   return (

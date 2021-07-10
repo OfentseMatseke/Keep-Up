@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import Dashboard from "../../components/dashboard/Dashboard";
 import Cookies from "js-cookie";
 import Table from "../../components/dashboard/Table";
+import { useAppContext } from "../../src/context";
+import router from "next/router";
+import { parseCookies } from "nookies";
 
 export default function projects() {
   const [suburb, setSuburb] = useState("Unknown");
@@ -27,18 +30,27 @@ export default function projects() {
       lookup: { sandown: "Sandown", bramley: "Bramley" },
     },
   ]);
-  const api_url =
-    "https://9pylrbkatk.execute-api.eu-central-1.amazonaws.com/dev/";
+  const { checkSession, loading, setLoading } = useAppContext();
 
   useEffect(() => {
     setSuburb(Cookies.get("suburb"));
-
-    const projects_url = `${api_url}getProjects?suburb=${suburb}`;
+    const cookies = parseCookies();
+    if (
+      Object.keys(cookies).length !== 0 &&
+      cookies.constructor === Object &&
+      cookies.token
+    ) {
+      checkSession();
+    } else {
+      router.push("/dashboard/signin");
+    }
+    const projects_url = `${process.env.NEXT_PUBLIC_API_KEY}/getProjects?suburb=${suburb}`;
 
     const getProjects = async (projects_url) => {
       fetch(projects_url)
         .then((response) => response.json())
         .then((json) => {
+          console.log("This is the json", json);
           setProjects(
             json.map((item) => {
               const container = {};
@@ -93,21 +105,26 @@ export default function projects() {
         console.error("fetch failed", err);
       });
   };
-  return (
-    <Dashboard>
-      <Table
-        columns={columns}
-        data={projects}
-        title={"Projects"}
-        setData={setProjects}
-        deleteItem={deleteItem}
-        addItem={addItem}
-        updateItem={updateItem}
-      />
-      {/* <AddProject />
+
+  if (loading) {
+    return null;
+  } else {
+    return (
+      <Dashboard>
+        <Table
+          columns={columns}
+          data={projects}
+          title={"Projects"}
+          setData={setProjects}
+          deleteItem={deleteItem}
+          addItem={addItem}
+          updateItem={updateItem}
+        />
+        {/* <AddProject />
       <div style={{ height: 400, width: "100%" }}>
         <DataGrid rows={projects} columns={columns} checkboxSelection />
       </div> */}
-    </Dashboard>
-  );
+      </Dashboard>
+    );
+  }
 }

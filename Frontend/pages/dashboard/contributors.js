@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import Dashboard from "../../components/dashboard/Dashboard";
 import Cookies from "js-cookie";
 import Table from "../../components/dashboard/Table";
+import router from "next/router";
+import { parseCookies } from "nookies";
+import { useAppContext } from "../../src/context";
 
 const columns = [
   {
@@ -28,14 +31,23 @@ const columns = [
 export default function contributors() {
   const [suburb, setSuburb] = useState("Unknown");
   const [contributors, setContributors] = useState([]);
-  const api_url =
-    "https://9pylrbkatk.execute-api.eu-central-1.amazonaws.com/dev/";
+  const { checkSession, loading, setLoading } = useAppContext();
+
   useEffect(() => {
     setSuburb(Cookies.get("suburb"));
+    const cookies = parseCookies();
+    if (
+      Object.keys(cookies).length !== 0 &&
+      cookies.constructor === Object &&
+      cookies.token
+    ) {
+      checkSession();
+    } else {
+      router.push("/dashboard/signin");
+    }
+    const contributors_url = `${process.env.NEXT_PUBLIC_API_KEY}/getContributors?suburb=${suburb}`;
 
-    const contributors_url = `${api_url}getContributors?suburb=${suburb}`;
-
-    const getContributors = async (projects_url) => {
+    const getContributors = async (contributors_url) => {
       fetch(contributors_url)
         .then((response) => response.json())
         .then((json) => {
@@ -95,20 +107,24 @@ export default function contributors() {
       });
   };
 
-  return (
-    <Dashboard>
-      <Table
-        columns={columns}
-        data={contributors}
-        setData={setContributors}
-        title={"Contributors"}
-        deleteItem={deleteItem}
-        addItem={addItem}
-        updateItem={updateItem}
-      />
-      {/* <div style={{ height: 400, width: "100%" }}>
+  if (loading) {
+    return null;
+  } else {
+    return (
+      <Dashboard>
+        <Table
+          columns={columns}
+          data={contributors}
+          setData={setContributors}
+          title={"Contributors"}
+          deleteItem={deleteItem}
+          addItem={addItem}
+          updateItem={updateItem}
+        />
+        {/* <div style={{ height: 400, width: "100%" }}>
         <DataGrid rows={contributors} columns={columns} checkboxSelection />
       </div> */}
-    </Dashboard>
-  );
+      </Dashboard>
+    );
+  }
 }

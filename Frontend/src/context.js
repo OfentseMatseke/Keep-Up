@@ -22,7 +22,7 @@ const AppContext = createContext();
 export function AppWrapper({ children }) {
   const [user, setUser] = useState(null);
   const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -115,13 +115,14 @@ export function AppWrapper({ children }) {
     if (cognitoUser == null) {
       setUser(null);
     }
+    setLoading(false);
     return authenticated;
   };
 
   const logout = () => {
     destroyCookie(null, "token");
     handleNotify("Signing out...");
-    console.log("logging out");
+
     const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
     const cognitoUser = userPool.getCurrentUser();
@@ -142,6 +143,7 @@ export function AppWrapper({ children }) {
         errorMessage,
         login,
         logout,
+        setLoading,
         checkSession,
       }}
     >

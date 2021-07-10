@@ -83,7 +83,7 @@ function thankyou({ id, resourcePath }) {
       const { amount, email, name, transactionDate, phone, reference } =
         JSON.parse(detail);
       // console.log(amount, email, name, transactionDate, phone, reference);
-      let url = `${process.env.API_KEY}/recordPayment?id=${id}&amount=${amount}
+      let url = `${process.env.NEXT_PUBLIC_API_KEY}/recordPayment?id=${id}&amount=${amount}
       &emailAddress=${email}&name=${name}&transactionDate=${transactionDate}&phoneNumber=${phone}&reference=${reference}`;
       const paymentStatus = await axios.get(url);
       // console.log(paymentStatus);
