@@ -6,7 +6,7 @@ AWS.config.update({
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-module.exports.getEvents = (event) => {
+module.exports.getEvents = async (event) => {
   let body = "";
   let statusCode = 200;
   const headers = {
